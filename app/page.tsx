@@ -1,95 +1,44 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client"
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>app/page.tsx</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useEffect, useState } from 'react';
+import AddStudent from './components/AddStudent';
+import StudentList from './components/StudentList';
+import Navbar from './components/Navbar';
+import { Container } from '@mui/material';
+import Footer from './components/Footer';
+import axios from 'axios';
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+
+interface Student {
+  id: number;
+  name: string;
+  age: number;
 }
+
+const HomePage: React.FC = () => {
+  const [students, setStudents] = useState<Student[]>([]);
+
+  const fetchStudents = async () => {
+    try {
+      const response = await axios.get('/api/students');
+      setStudents(response.data);
+    } catch (error) {
+      console.error("Error fetching students: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []);
+  
+  return (
+    <Container>
+      <Navbar />
+      <AddStudent onStudentAdded={fetchStudents}/>
+      <StudentList students={students} fetchStudents={fetchStudents}/>
+      <Footer/>
+    </Container>
+  );
+};
+
+export default HomePage;

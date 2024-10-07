@@ -20,7 +20,7 @@ jobs:
         run: npm install
         
       - name: Generate Deployment Package
-        run: zip -r student-records-app.zip .
+        run: zip -r student-records-app.zip . -x 'node_modules/**\*'
         
       - name: Deploy to EB
         uses: einaregilsson/beanstalk-deploy@v22
